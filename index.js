@@ -18,7 +18,7 @@ async function onPlayerMove(i){
         updateBoardAfterMove(i, player)
         //console.log(board.matrix)
 
-        // wait for some time
+        // wait for some time 
         await new Promise(r => setTimeout(r, 300));
 
         // 2 MINIMAX MOVE 
