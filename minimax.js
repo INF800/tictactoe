@@ -1,3 +1,8 @@
+/**
+ * Minimax algorithm that operates on
+ * Instance of Board
+ */
+
 var clicked = new Set([])
 
 function miniMaxMove(board){

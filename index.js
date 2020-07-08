@@ -1,3 +1,7 @@
+/**
+ * Driver code
+ */
+
 board = new Board()
 
 function onPlayerMove(i){
@@ -48,6 +52,7 @@ function updateBoardAfterMove(i, who){
         default: console.log('error!'); break;
       }
 }
+
 
 function player(){
     return 'o'

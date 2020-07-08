@@ -1,3 +1,7 @@
+/**
+ * Class for tic tac toe board
+ */
+
 class Board {
     constructor() {
         this.matrix = [
