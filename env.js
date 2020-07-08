@@ -3,8 +3,9 @@
  * User action like player move
  */
 
-const body = document.getElementById('body')
-const box = document.getElementsByClassName('box')
+const body      = document.getElementById('body')
+const box       = document.getElementsByClassName('box')
+const status    = document.getElementById('status')
 
 if (( window.innerWidth > 800 ) && ( window.innerHeight > 600 )){
     // desktop

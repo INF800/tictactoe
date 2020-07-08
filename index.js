@@ -17,6 +17,9 @@ async function onPlayerMove(i){
         // 1-2 - UPDATE BOARD (Player move)
         updateBoardAfterMove(i, player)
         //console.log(board.matrix)
+        // 2-3 - CHECK STATUS WIN/LOSE
+        await checkStatus()
+        checkTie()
 
         // wait for some time 
         await new Promise(r => setTimeout(r, 300));
@@ -24,8 +27,8 @@ async function onPlayerMove(i){
         // 2 MINIMAX MOVE 
         idx = miniMaxMove(board)
 
-        // idx is null if whole board is full 
-        // exec only if atleast on of places in board is empty 
+        // idx is null if whole board is full
+        // exec next move only if atleast on of places in board is empty. 
         if (idx != null){
             // 2-1 - UPDATE ENV (minimax move)
             box[idx].style.boxShadow = 'inset 2px 2px 4px #CBCBCB, inset -2px -2px 4px #FFFFFF'
@@ -36,8 +39,13 @@ async function onPlayerMove(i){
             // 2-2 - UPDATE BOARD (minimax move)
             updateBoardAfterMove(idx, miniMax)
             console.log(board.matrix)   
+
+            // 2-3 - CHECK STATUS WIN/LOSE
+            await checkStatus()
+            checkTie()
         }
     }
+
 }
 
 
@@ -56,11 +64,52 @@ function updateBoardAfterMove(i, who){
       }
 }
 
-
 function player(){
     return 'o'
 }
 
 function miniMax(){
     return 'x'
+}
+
+var Name = new Map()
+Name['x'] = 'Minimax'
+Name['o'] = 'Player'
+
+async function checkStatus(tie=false){
+    var winner = board.winner()
+    if (winner != -1){
+        console.log('winner is: ', winner)
+        // wait for some time before clearing env and board
+        status.innerText = Name[winner] + ' won the game!'
+        await new Promise(r => setTimeout(r, 2000));
+        resetEnvAndBoard()
+    }
+    if (tie) {
+        status.innerText = 'Game Draw!'
+        await new Promise(r => setTimeout(r, 2000));
+        resetEnvAndBoard()
+    }
+}
+
+function resetEnvAndBoard(){
+    // reset board
+    board = new Board()
+
+    // reset env
+    for (let i=0; i<box.length; i++){
+        box[i].style.boxShadow = '4.5px 4.5px 9px #CBCBCB, -4.5px -4.5px 9px #FFFFFF'
+        box[i].innerText = ''
+    }
+
+    // reset clicked & status
+    clicked = new Set([])
+    status.innerText = ''
+}
+
+function checkTie(){
+    // all filled is same as tie
+    if (clicked.size === 9) {
+        checkStatus(tie=true)
+    }
 }
