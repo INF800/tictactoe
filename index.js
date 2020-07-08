@@ -4,7 +4,7 @@
 
 board = new Board()
 
-function onPlayerMove(i){
+async function onPlayerMove(i){
     // console.log('clicked', i)
     if (clicked.has(i)){
         console.log('already clicked!')
@@ -17,6 +17,9 @@ function onPlayerMove(i){
         // 1-2 - UPDATE BOARD (Player move)
         updateBoardAfterMove(i, player)
         //console.log(board.matrix)
+
+        // wait for some time
+        await new Promise(r => setTimeout(r, 300));
 
         // 2 MINIMAX MOVE 
         idx = miniMaxMove(board)
