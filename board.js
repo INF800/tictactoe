@@ -7,12 +7,8 @@ id['x'] = 1
 id['o'] = -1
 
 class Board {
-    constructor() {
-        this.matrix = [
-            ['', '', ''],
-            ['', '', ''],
-            ['', '', '']
-        ]
+    constructor(matrix=[['', '', ''],['', '', ''],['', '', '']]) {
+        this.matrix = matrix
     }
 
     update(i, j, val){
@@ -64,8 +60,16 @@ class Board {
                 }
             }
         }
-
         return len
     }
 
-  }
+    // return next most free pos idx 
+    // (by row major)
+    nextMoveInRowMajor() {
+        for(let i=0; i<3; i++){
+            for(let j=0; j<3; j++){
+                if (this.matrix[i][j] == ''){ return [i, j] }
+            }
+        }
+    }
+}
