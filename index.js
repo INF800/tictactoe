@@ -75,13 +75,14 @@ var Name = new Map()
 Name[1] = 'MiniMax'
 Name[-1] = 'Player'
 
-async function checkStatus(tie=false){
+async function checkStatus(){
     // boad.winner() -->
     // null : game in progress
     // -1   : player win
     // 1    : miniMax win
     // 0    : draw 
     var winner = board.winner() 
+    
     if (winner === -1 || winner==1){
         console.log('winner is: ', winner)
         // wait for some time before clearing env and board
