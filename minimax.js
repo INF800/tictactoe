@@ -18,11 +18,11 @@ function miniMaxMove(board){
     }
 
     // all filled
-    if (cntr === 100){
-        console.log('100idx', idx)
+    if (board.size() === 9){
         return null
     }
 
+    // else
     console.log(idx)
     return idx
 }

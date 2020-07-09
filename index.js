@@ -19,7 +19,7 @@ async function onPlayerMove(i){
         //console.log(board.matrix)
         // 2-3 - CHECK STATUS WIN/LOSE
         await checkStatus()
-        checkTie()
+        
 
         // wait for some time 
         await new Promise(r => setTimeout(r, 300));
@@ -27,14 +27,13 @@ async function onPlayerMove(i){
         // 2 MINIMAX MOVE 
         idx = miniMaxMove(board)
 
-        // idx is null if whole board is full
+        // idx is null if whole board is full. (minimax cannot make move as all are filled)
         // exec next move only if atleast on of places in board is empty. 
         if (idx != null){
             // 2-1 - UPDATE ENV (minimax move)
             box[idx].style.boxShadow = 'inset 2px 2px 4px #CBCBCB, inset -2px -2px 4px #FFFFFF'
-            //box[idx].style.color = 'rgba(0,0,0,0.6)'
             box[idx].innerText = miniMax() // 'x'
-            clicked.add(idx) // extra
+            clicked.add(idx)
 
             // 2-2 - UPDATE BOARD (minimax move)
             updateBoardAfterMove(idx, miniMax)
@@ -42,7 +41,7 @@ async function onPlayerMove(i){
 
             // 2-3 - CHECK STATUS WIN/LOSE
             await checkStatus()
-            checkTie()
+            
         }
     }
 
@@ -73,23 +72,30 @@ function miniMax(){
 }
 
 var Name = new Map()
-Name['x'] = 'Minimax'
-Name['o'] = 'Player'
+Name[1] = 'MiniMax'
+Name[-1] = 'Player'
 
 async function checkStatus(tie=false){
-    var winner = board.winner()
-    if (winner != -1){
+    // boad.winner() -->
+    // null : game in progress
+    // -1   : player win
+    // 1    : miniMax win
+    // 0    : draw 
+    var winner = board.winner() 
+    if (winner === -1 || winner==1){
         console.log('winner is: ', winner)
         // wait for some time before clearing env and board
         status.innerText = Name[winner] + ' won the game!'
         await new Promise(r => setTimeout(r, 2000));
-        resetEnvAndBoard()
-    }
-    if (tie) {
+    } else if (winner==0) {
         status.innerText = 'Game Draw!'
         await new Promise(r => setTimeout(r, 2000));
+    } 
+    if (winner != null){
+        // reset env and board and other things when game
+        // not in progress i.e ends
         resetEnvAndBoard()
-    }
+    } 
 }
 
 function resetEnvAndBoard(){
@@ -107,9 +113,3 @@ function resetEnvAndBoard(){
     status.innerText = ''
 }
 
-function checkTie(){
-    // all filled is same as tie
-    if (clicked.size === 9) {
-        checkStatus(tie=true)
-    }
-}
