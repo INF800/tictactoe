@@ -32,7 +32,7 @@ async function onPlayerMove(i){
         if (idx != null){
             // 2-1 - UPDATE ENV (minimax move)
             box[idx].style.boxShadow = 'inset 2px 2px 4px #CBCBCB, inset -2px -2px 4px #FFFFFF'
-            box[idx].style.color = 'rgba(0,0,0,0.6)'
+            //box[idx].style.color = 'rgba(0,0,0,0.6)'
             box[idx].innerText = miniMax() // 'x'
             clicked.add(idx) // extra
 
