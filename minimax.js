@@ -31,27 +31,61 @@ var matCopy     = JSON.parse(JSON.stringify(board.matrix)) // deep copy
 var boardCopy   = new Board(matCopy)
 */
 
-function returnBestMove(board){ 
-    // own copy of board
-    var matCopy     = JSON.parse(JSON.stringify(board.matrix)) // deep copy
-    var boardCopy   = new Board(matCopy)
+function returnBestMove(board){
 
-    var emptys      = boardCopy.allEmptyInRowMajor()
-    var score       = -Infinity
+    var moves = board.allEmptyInRowMajor()
     
-    emptys.forEach((item, idx)=>{
+    var bestRowMove = null
+    var bestColMove = null
+    var bestScore   = -Infinity
 
-        var [i, j] = item
-        score = minimax(boardCopy, [score, i, j], maximizing=true)
+    moves.forEach(([i, j], idx)=>{
+        var matCopy     = JSON.parse(JSON.stringify(board.matrix)) // deep copy
+        var boardCopy   = new Board(matCopy)
 
-        console.log(i, j, score)
+        //board.update(i, j, 'x')
+
+        var score = minimax(boardCopy, 0, true)
+        console.log('score', score)
+        if (score > bestScore){
+            bestScore    = score
+            bestRowMove  = i
+            bestColMove  = j
+        } 
     })
+
+    console.log(bestRowMove)
+    return vec2idx(bestRowMove ,bestColMove)
 }
 
-function minimax(board, data, maximizing){
-    board.update(data[1], data[2], minmax2turn(maximizing))
-    
-    // base conditon
+
+function minimax(board, depth, isMaximizingPlayer){
+    console.log(depth, board.matrix)
+    // base condn
+    if (board.winner() != null ){
+        return board.winner() // never null
+    }
+
+    if (isMaximizingPlayer === true){
+        var moves = board.allEmptyInRowMajor()
+        var bestScore = -Infinity
+        moves.forEach(([i, j], idx)=>{
+            board.update(i, j, minmax2turn(isMaximizingPlayer))
+            var score = minimax(board, depth+1, false)
+            bestScore = Math.max(score, bestScore)
+            return bestScore
+        })
+    } else {
+        // minimizing player
+        var moves = board.allEmptyInRowMajor()
+        var bestScore = +Infinity
+        moves.forEach(([i,j], idx)=>{
+            board.update(i, j, minmax2turn(isMaximizingPlayer))
+            var score = minimax(board, depth+1, true)
+            bestScore = Math.min(score, bestScore)
+            return bestScore
+        })
+    }
 }
 
 
