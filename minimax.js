@@ -5,8 +5,8 @@
 
 var clicked = new Set([])
 
-function miniMaxMove(board){
-    
+function randomMove(board){
+
     var idx = Math.floor(Math.random() * 9 )
 
     // console.log(clicked.has(idx))
@@ -27,23 +27,28 @@ function miniMaxMove(board){
     return idx
 }
 
-function returnBestMove(){
+function returnBestMove(board){
     // creeate deep copy of board as we are going to do inplace
     var matCopy     = JSON.parse(JSON.stringify(board.matrix)) // deep copy
     var boardCopy   = new Board(matCopy)
 
-    bestScore = -Infinity
-    var [] = mmx(boardCopy, maximizing=true)
+    var bestScore = -Infinity
+    var i = null
+    var j = null 
+    var [bestScore, i, j] = mmx(boardCopy, data=[bestScore, i, j], maximizing=true)
 
+    console.log(i,j, 'idx:', vec2idx(i,j))
+    return vec2idx(i,j)
 }
 
-function mmx(_board, maximizing=true, myscore=-Infinity){
+function mmx(_board, data ,maximizing=true){
     
     var [i, j] = _board.nextMoveInRowMajor() // get next free locn
     
     // if maximizing, 'x's turn, if minimizing, 'o's turn
     var turn = null
     if (maximizing){ turn = 'x' } else { turn = 'o' }
+    console.log('mmx', i, j, turn)
 
     // update (in place)
     _board.update(i, j, turn) 
@@ -56,19 +61,34 @@ function mmx(_board, maximizing=true, myscore=-Infinity){
     if ((win == 1 && maximizing==true) || (win == 1 && maximizing==false)) {
         // if, in x's turn (maximising) x won (or)
         // if in o's turn(minimizing) o lost
-        return 10
+        return [10, i, j]
     }
     if ((win == -1 && maximizing==true) || (win == -1 && maximizing==false)) {
         // if, in x's turn (maximising) x lost (or)
         // if in o's turn(minimizing) o won
-        return -10
+        return [-10, i, j]
     }
     if ((win == 0 && maximizing==true) || (win == 0 && maximizing==false)) {
-        return 0 // same for tie
+        return [0, i, j] // same for tie
     }
 
+
     // esle if null(game in progress)
-    var score = mmx(_board, (!maximizing)) // false<->true recursively min<->maz
-    if (score > myscore){ return [score, i, j] }
-    return { [myscore, i, j] }
+    var [retScore, retI, retJ] = mmx(_board, data=data, (!maximizing)) // false<->true recursively min<->maz
+    
+    if (retScore > data[0]) { return [retScore, retI, retJ] }
+    else {return data}
+}
+
+
+function vec2idx(i, j){
+    if (i === 0 && j == 0) { return 0 }
+    if (i === 0 && j == 1) { return 1 }
+    if (i === 0 && j == 2) { return 2 }
+    if (i === 1 && j == 0) { return 3 }
+    if (i === 1 && j == 1) { return 4 }
+    if (i === 1 && j == 2) { return 5 }
+    if (i === 2 && j == 0) { return 6 }
+    if (i === 2 && j == 1) { return 7 }
+    if (i === 2 && j == 2) { return 8 }
 }
