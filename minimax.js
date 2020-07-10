@@ -33,22 +33,20 @@ function returnBestMove(board){
     var boardCopy   = new Board(matCopy)
 
     var bestScore = -Infinity
-    var i = null
-    var j = null 
-    var [bestScore, i, j] = mmx(boardCopy, data=[bestScore, i, j], maximizing=true)
+    var [bestScore, i, j] = mmx(boardCopy, score=bestScore, maximizing=true)
 
     console.log(i,j, 'idx:', vec2idx(i,j))
     return vec2idx(i,j)
 }
 
-function mmx(_board, data ,maximizing=true){
+function mmx(_board, score ,maximizing=true){
     
     var [i, j] = _board.nextMoveInRowMajor() // get next free locn
     
     // if maximizing, 'x's turn, if minimizing, 'o's turn
     var turn = null
     if (maximizing){ turn = 'x' } else { turn = 'o' }
-    console.log('mmx', i, j, turn)
+    console.log('mmx ponder', i, j, turn)
 
     // update (in place)
     _board.update(i, j, turn) 
@@ -74,10 +72,10 @@ function mmx(_board, data ,maximizing=true){
 
 
     // esle if null(game in progress)
-    var [retScore, retI, retJ] = mmx(_board, data=data, (!maximizing)) // false<->true recursively min<->maz
+    var retScore = mmx(_board, score=score, (!maximizing)) // false<->true recursively min<->maz
     
-    if (retScore > data[0]) { return [retScore, retI, retJ] }
-    else {return data}
+    if (retScore > score) { return [retScore, i, j] }
+    else {return [score, i, j]}
 }
 
 
