@@ -17,13 +17,9 @@ function randomMove(board){
         console.log(idx)
         idx = Math.floor(Math.random() * 9 )
     }
-
     // all filled
-    if (board.size() === 9){
-        return null
-    }
-
-    // else
+    if (board.size() === 9){ return null }
+    // else,
     console.log(idx)
     return idx
 }
@@ -38,7 +34,7 @@ function returnBestMove(board){
 
     var [bestMove, bestScore] = minimax(boardCopy, -Infinity, +Infinity, true, 0)
 
-    console.log(bestMove, bestScore)
+    console.log('FINAL MOVE: ', bestMove, bestScore)
     return vec2idx( bestMove[0], bestMove[1])
 }
 
@@ -67,7 +63,7 @@ function minimax(board, alpha ,beta ,isMaximizingPlayer, depth){
     else if (stat == null){
         // game in progress
         if (isMaximizingPlayer){
-            var bestScore   = -Infinity
+            var maxScore    = -Infinity
             var bestMove    = [null, null]
 
             var possibleMoves = board.possibleMovesInRowMajor()
@@ -81,20 +77,20 @@ function minimax(board, alpha ,beta ,isMaximizingPlayer, depth){
                 // if x wins, score = +1 (but can be 0 / -1 as well indicating draw/o-win respectively)
                 // so, lookout for max i.e +1 (if +1 not avl. in search space -> 0 )
                 var score = minimax(board, alpha, beta, !isMaximizingPlayer, depth+1) // check either win / draw
-                if (score > bestScore){
-                    bestScore   = score
-                    // alpha       = score // record alpha
+                if (score > maxScore){
+                    maxScore    = score
                     bestMove    = [i,j]
                 }
 
                 // log only first recursion
-                if (depth==0){console.log('move: ', [i,j], 'score: ', score, 'best: ', bestScore, bestMove)}
+                if (depth==0){console.log('---move: ', [i,j], 'score: ', score, 'best: ', maxScore, bestMove)}
                 
                 board.update(i,j, '')
 
                 // ----------------------------------------------------------------------------------
                 // ALPHA PRUNING:
                 // ----------------------------------------------------------------------------------
+                // alpha = maxScore
                 // if (score < alpha){ /*console.log('pruned!');*/ break } 
                 // ----------------------------------------------------------------------------------
             }
@@ -102,15 +98,15 @@ function minimax(board, alpha ,beta ,isMaximizingPlayer, depth){
 
             // retun differently for first call (as we need data!)
             if (depth == 0){ 
-                return [bestMove, bestScore]
+                return [bestMove, maxScore]
             } else { 
                 // populate memo 2of3
-                memo[ JSON.stringify(board.matrix)+String(isMaximizingPlayer) ] = bestScore
-                return bestScore /*comes from base condition (and searched upon)*/ 
+                memo[ JSON.stringify(board.matrix)+String(isMaximizingPlayer) ] = maxScore
+                return maxScore /*comes from base condition (and searched upon)*/ 
             }
         }
         else if (!isMaximizingPlayer){
-            var bestScore   = +Infinity
+            var minScore    = +Infinity
             var bestMove    = [null, null]
 
             var possibleMoves2 = board.possibleMovesInRowMajor()
@@ -125,30 +121,31 @@ function minimax(board, alpha ,beta ,isMaximizingPlayer, depth){
                 // so, lookout for min i.e -1 (if -1 not avl. in search space -> 0 )
                 // ------------------------------------------------------------------------------------
                 // Looking for min cz, we are expanding our search space for WORST-CASE-SCENARIO
-                // where o allways picks FIRST-BEST-MOVE (cz. if (score < bestScore))
+                // where o always picks (FIRST)BEST-MOVE (cz. if (score < minScore))
                 var score = minimax(board, alpha, beta, !isMaximizingPlayer, depth+1) // check either win / draw
-                if (score < bestScore){
-                    bestScore   = score
-                    // beta        = score // record beta
+                if (score < minScore){           
+                    minScore    = score
                     bestMove    = [i,j]
                 }
-                
+
+
                 board.update(i,j, '')
 
                 // ----------------------------------------------------------------------------------
                 // BETA PRUNING: we are trying to find min possible
-                //                  - beta records min (just like bestScore)
+                //                  - beta records min (just like minScore)
                 //                  - break the loop optimally so that minmax func is not called for
                 //                      subsequent possibleMoves
                 //                  - optimal? nope
                 // ----------------------------------------------------------------------------------
+                // beta = minScore         
                 // if (score > beta){ /*console.log('pruned!');*/ break} 
                 // ----------------------------------------------------------------------------------
             }
 
             // populate memo 3of3
-            memo[ JSON.stringify(board.matrix)+String(isMaximizingPlayer) ] = bestScore
-            return bestScore // comes from base condition (and searched upon)
+            memo[ JSON.stringify(board.matrix)+String(isMaximizingPlayer) ] = minScore
+            return minScore // comes from base condition (and searched upon)
         }
     }
 }
