@@ -83,17 +83,19 @@ function minimax(board, alpha ,beta ,isMaximizingPlayer, depth){
                 var score = minimax(board, alpha, beta, !isMaximizingPlayer, depth+1) // check either win / draw
                 if (score > bestScore){
                     bestScore   = score
-                    alpha       = score
+                    alpha       = score // record alpha
                     bestMove    = [i,j]
                 }
 
+                // log only first recursion
                 if (depth==0){console.log('move: ', [i,j], 'score: ', score, 'best: ', bestScore, bestMove)}
+                
                 board.update(i,j, '')
 
                 // ----------------------------------------------------------------------------------
                 // ALPHA PRUNING:
                 // ----------------------------------------------------------------------------------
-                // if (score <= alpha){ console.log('pruned!'); break } 
+                if (score < alpha){ /*console.log('pruned!');*/ break } 
                 // ----------------------------------------------------------------------------------
             }
 
@@ -127,7 +129,7 @@ function minimax(board, alpha ,beta ,isMaximizingPlayer, depth){
                 var score = minimax(board, alpha, beta, !isMaximizingPlayer, depth+1) // check either win / draw
                 if (score < bestScore){
                     bestScore   = score
-                    beta        = score
+                    beta        = score // record beta
                     bestMove    = [i,j]
                 }
                 
@@ -140,7 +142,7 @@ function minimax(board, alpha ,beta ,isMaximizingPlayer, depth){
                 //                      subsequent possibleMoves
                 //                  - optimal? nope
                 // ----------------------------------------------------------------------------------
-                // if (score >= beta){ console.log('pruned!'); break } 
+                // if (score > beta){ console.log('pruned!'); break} 
                 // ----------------------------------------------------------------------------------
             }
 
