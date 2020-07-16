@@ -4,6 +4,7 @@
  */
 
 var clicked = new Set([])
+const memo = new Map()
 
 function randomMove(board){
 
@@ -35,20 +36,18 @@ function returnBestMove(board){
     var matCopy     = JSON.parse(JSON.stringify(board.matrix)) // deep copy
     var boardCopy   = new Board(matCopy)
 
-    var [bestMove, bestScore] = minimax(boardCopy, true, 0)
+    var [bestMove, bestScore] = minimax(boardCopy, -Infinity, +Infinity, true, 0)
 
     console.log(bestMove, bestScore)
     return vec2idx( bestMove[0], bestMove[1])
 }
 
-const memo = new Map()
-
-function minimax(board, isMaximizingPlayer, depth){
+function minimax(board, alpha ,beta ,isMaximizingPlayer, depth){
 
     // ----------------------------------------------------------------------------------
     // MEMOISATION:
     // ----------------------------------------------------------------------------------
-    if (memo.has( JSON.stringify(board.matrix)+String(isMaximizingPlayer) )){
+    if ((JSON.stringify(board.matrix)+String(isMaximizingPlayer) in memo) && (depth!=0)){ // depth=0 returning difft 
         // return from memo
         return memo[JSON.stringify(board.matrix)+String(isMaximizingPlayer)]
     }
@@ -71,21 +70,33 @@ function minimax(board, isMaximizingPlayer, depth){
             var bestScore   = -Infinity
             var bestMove    = [null, null]
 
-            possibleMoves = board.possibleMovesInRowMajor()            
-            possibleMoves.forEach(([i,j], index) => {
-                board.update(i,j, bool2turn(isMaximizingPlayer))
+            var possibleMoves = board.possibleMovesInRowMajor()
+            for(let iter=0; iter<possibleMoves.length; iter++){
 
+                var i = possibleMoves[iter][0]
+                var j = possibleMoves[iter][1]
+                board.update(i,j, bool2turn(isMaximizingPlayer))
+                
                 // for maximizing player - 'x'
                 // if x wins, score = +1 (but can be 0 / -1 as well indicating draw/o-win respectively)
                 // so, lookout for max i.e +1 (if +1 not avl. in search space -> 0 )
-                var score = minimax(board, !isMaximizingPlayer, depth+1) // check either win / draw
+                var score = minimax(board, alpha, beta, !isMaximizingPlayer, depth+1) // check either win / draw
                 if (score > bestScore){
                     bestScore   = score
+                    alpha       = score
                     bestMove    = [i,j]
                 }
+
                 if (depth==0){console.log('move: ', [i,j], 'score: ', score, 'best: ', bestScore, bestMove)}
                 board.update(i,j, '')
-            })
+
+                // ----------------------------------------------------------------------------------
+                // ALPHA PRUNING:
+                // ----------------------------------------------------------------------------------
+                // if (score <= alpha){ console.log('pruned!'); break } 
+                // ----------------------------------------------------------------------------------
+            }
+
 
             // retun differently for first call (as we need data!)
             if (depth == 0){ 
@@ -100,25 +111,38 @@ function minimax(board, isMaximizingPlayer, depth){
             var bestScore   = +Infinity
             var bestMove    = [null, null]
 
-            possibleMoves = board.possibleMovesInRowMajor()
-            possibleMoves.forEach(([i,j], index) => {
-                board.update(i,j, bool2turn(isMaximizingPlayer))
+            var possibleMoves2 = board.possibleMovesInRowMajor()
+            for(let iter=0; iter<possibleMoves2.length; iter++){
+                
+                var i = possibleMoves2[iter][0]
+                var j = possibleMoves2[iter][1]
 
+                board.update(i,j, bool2turn(isMaximizingPlayer))
                 // for minimizing player - 'o'
                 // if o wins, score = -1 (but can be 0 / +1 as well indicating draw/x-win respectively)
                 // so, lookout for min i.e -1 (if -1 not avl. in search space -> 0 )
                 // ------------------------------------------------------------------------------------
                 // Looking for min cz, we are expanding our search space for WORST-CASE-SCENARIO
-                // where o allways picks FIRST-best-move
-                var score = minimax(board, !isMaximizingPlayer, depth+1) // check either win / draw
+                // where o allways picks FIRST-BEST-MOVE (cz. if (score < bestScore))
+                var score = minimax(board, alpha, beta, !isMaximizingPlayer, depth+1) // check either win / draw
                 if (score < bestScore){
                     bestScore   = score
+                    beta        = score
                     bestMove    = [i,j]
                 }
                 
                 board.update(i,j, '')
-            })
 
+                // ----------------------------------------------------------------------------------
+                // BETA PRUNING: we are trying to find min possible
+                //                  - beta records min (just like bestScore)
+                //                  - break the loop optimally so that minmax func is not called for
+                //                      subsequent possibleMoves
+                //                  - optimal? nope
+                // ----------------------------------------------------------------------------------
+                // if (score >= beta){ console.log('pruned!'); break } 
+                // ----------------------------------------------------------------------------------
+            }
 
             // populate memo 3of3
             memo[ JSON.stringify(board.matrix)+String(isMaximizingPlayer) ] = bestScore
