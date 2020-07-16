@@ -102,7 +102,7 @@ function minimax(board, alpha ,beta ,isMaximizingPlayer, depth){
                 //      + if chance of `x` winning (alpha) is greater than `o` winning (beta)
                 // ----------------------------------------------------------------------------------------
                 alpha = Math.max(score, alpha) // note: current `score`
-                if (beta < alpha){ console.log('pruned!'); break }
+                if (beta < alpha){ /*console.log('pruned!');*/ break }
                 // can use this too:
                 // if ( alpha > beta ) { /*console.log('pruned!');*/ break } 
                 // ----------------------------------------------------------------------------------------
