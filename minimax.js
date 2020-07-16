@@ -88,7 +88,7 @@ function minimax(board, isMaximizingPlayer, depth){
                 // so, lookout for min i.e -1 (if -1 not avl. in search space -> 0 )
                 // ------------------------------------------------------------------------------------
                 // Looking for min cz, we are expanding our search space for WORST-CASE-SCENARIO
-                // where o allways picks best move
+                // where o allways picks FIRST-best-move
                 var score = minimax(board, !isMaximizingPlayer, depth+1) // check either win / draw
                 if (score < bestScore){
                     bestScore   = score
