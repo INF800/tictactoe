@@ -83,7 +83,7 @@ function minimax(board, alpha ,beta ,isMaximizingPlayer, depth){
                 var score = minimax(board, alpha, beta, !isMaximizingPlayer, depth+1) // check either win / draw
                 if (score > bestScore){
                     bestScore   = score
-                    alpha       = score // record alpha
+                    // alpha       = score // record alpha
                     bestMove    = [i,j]
                 }
 
@@ -95,7 +95,7 @@ function minimax(board, alpha ,beta ,isMaximizingPlayer, depth){
                 // ----------------------------------------------------------------------------------
                 // ALPHA PRUNING:
                 // ----------------------------------------------------------------------------------
-                if (score < alpha){ /*console.log('pruned!');*/ break } 
+                // if (score < alpha){ /*console.log('pruned!');*/ break } 
                 // ----------------------------------------------------------------------------------
             }
 
@@ -129,7 +129,7 @@ function minimax(board, alpha ,beta ,isMaximizingPlayer, depth){
                 var score = minimax(board, alpha, beta, !isMaximizingPlayer, depth+1) // check either win / draw
                 if (score < bestScore){
                     bestScore   = score
-                    beta        = score // record beta
+                    // beta        = score // record beta
                     bestMove    = [i,j]
                 }
                 
@@ -142,7 +142,7 @@ function minimax(board, alpha ,beta ,isMaximizingPlayer, depth){
                 //                      subsequent possibleMoves
                 //                  - optimal? nope
                 // ----------------------------------------------------------------------------------
-                // if (score > beta){ console.log('pruned!'); break} 
+                // if (score > beta){ /*console.log('pruned!');*/ break} 
                 // ----------------------------------------------------------------------------------
             }
 
