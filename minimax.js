@@ -41,12 +41,27 @@ function returnBestMove(board){
     return vec2idx( bestMove[0], bestMove[1])
 }
 
+const memo = new Map()
+
 function minimax(board, isMaximizingPlayer, depth){
+
+    // ----------------------------------------------------------------------------------
+    // MEMOISATION:
+    // ----------------------------------------------------------------------------------
+    if (memo.has( JSON.stringify(board.matrix)+String(isMaximizingPlayer) )){
+        // return from memo
+        return memo[JSON.stringify(board.matrix)+String(isMaximizingPlayer)]
+    }
+    // else, populate memo!
+    // ----------------------------------------------------------------------------------
+
     // base condition 
     // independant of maximizing/mininimizing bool as,
     // it is used to represent only final sate!
     stat = board.winner()
     if (stat != null){
+        // populate memo 1of3
+        memo[ JSON.stringify(board.matrix)+String(isMaximizingPlayer) ] = stat        
         return stat // -1 / +1 / 0 irrespective of minimizing/maximizing player
     }
 
@@ -73,7 +88,13 @@ function minimax(board, isMaximizingPlayer, depth){
             })
 
             // retun differently for first call (as we need data!)
-        if (depth == 0){ return [bestMove, bestScore]} else { return bestScore /*comes from base condition (and searched upon)*/ }
+            if (depth == 0){ 
+                return [bestMove, bestScore]
+            } else { 
+                // populate memo 2of3
+                memo[ JSON.stringify(board.matrix)+String(isMaximizingPlayer) ] = bestScore
+                return bestScore /*comes from base condition (and searched upon)*/ 
+            }
         }
         else if (!isMaximizingPlayer){
             var bestScore   = +Infinity
@@ -98,6 +119,9 @@ function minimax(board, isMaximizingPlayer, depth){
                 board.update(i,j, '')
             })
 
+
+            // populate memo 3of3
+            memo[ JSON.stringify(board.matrix)+String(isMaximizingPlayer) ] = bestScore
             return bestScore // comes from base condition (and searched upon)
         }
     }
