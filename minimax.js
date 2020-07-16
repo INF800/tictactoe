@@ -87,12 +87,25 @@ function minimax(board, alpha ,beta ,isMaximizingPlayer, depth){
                 
                 board.update(i,j, '')
 
-                // ----------------------------------------------------------------------------------
+                // ----------------------------------------------------------------------------------------
                 // ALPHA PRUNING:
-                // ----------------------------------------------------------------------------------
-                // alpha = maxScore
-                // if (score < alpha){ /*console.log('pruned!');*/ break } 
-                // ----------------------------------------------------------------------------------
+                //      alpha & beta at same depth are common to all nodes (just like max==true/flase)
+                //      + because of same minimax function activation record
+                //      + alpha and beta act like global
+                //
+                //      - beta  : chance of minimizingPlayer winning `o` 
+                //      - alpha : chance of maximizingPlayer winning `x`
+                //
+                // - break the loop optimally so that minmax func is not called for subsequent possibleMoves
+                // if either of these, is true, we can skip next possibleMoves by breaking loop
+                //      + if chance of `o` winning (beta) is less than `x` winning (alpha)
+                //      + if chance of `x` winning (alpha) is greater than `o` winning (beta)
+                // ----------------------------------------------------------------------------------------
+                alpha = Math.max(score, alpha) // note: current `score`
+                if (beta < alpha){ console.log('pruned!'); break }
+                // can use this too:
+                // if ( alpha > beta ) { /*console.log('pruned!');*/ break } 
+                // ----------------------------------------------------------------------------------------
             }
 
 
@@ -131,15 +144,23 @@ function minimax(board, alpha ,beta ,isMaximizingPlayer, depth){
 
                 board.update(i,j, '')
 
-                // ----------------------------------------------------------------------------------
-                // BETA PRUNING: we are trying to find min possible
-                //                  - beta records min (just like minScore)
-                //                  - break the loop optimally so that minmax func is not called for
-                //                      subsequent possibleMoves
-                //                  - optimal? nope
-                // ----------------------------------------------------------------------------------
-                // beta = minScore         
-                // if (score > beta){ /*console.log('pruned!');*/ break} 
+                // ----------------------------------------------------------------------------------------
+                // BETA PRUNING:
+                //      alpha & beta at same depth are common to all nodes (just like max==true/flase)
+                //      + because of same minimax function activation record
+                //
+                //      - beta  : chance of minimizingPlayer winning `o` (minimizing)
+                //      - alpha : chance of maximizingPlayer winning `x` (maximizing)
+                //
+                // - break the loop optimally so that minmax func is not called for subsequent possibleMoves
+                // if either of these, is true, we can skip next possibleMoves by breaking loop
+                //      + if chance of `o` winning (beta) is less than `x` winning (alpha)
+                //      + if chance of `x` winning (alpha) is greater than `o` winning (beta)
+                // ----------------------------------------------------------------------------------------
+                beta = Math.min( beta, score ) // note: current `score`
+                if ( beta < alpha ) { /*console.log('pruned!');*/ break } 
+                // can use this too:
+                // if ( alpha > beta ) { /*console.log('pruned!');*/ break } 
                 // ----------------------------------------------------------------------------------
             }
 
