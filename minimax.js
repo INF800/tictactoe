@@ -32,65 +32,79 @@ var boardCopy   = new Board(matCopy)
 */
 
 function returnBestMove(board){
+    var matCopy     = JSON.parse(JSON.stringify(board.matrix)) // deep copy
+    var boardCopy   = new Board(matCopy)
 
-    var moves = board.allEmptyInRowMajor()
-    
-    var bestRowMove = null
-    var bestColMove = null
-    var bestScore   = -Infinity
+    var [bestMove, bestScore] = minimax(boardCopy, true, 0)
 
-    moves.forEach(([i, j], idx)=>{
-        var matCopy     = JSON.parse(JSON.stringify(board.matrix)) // deep copy
-        var boardCopy   = new Board(matCopy)
+    console.log(bestMove, bestScore)
+    return vec2idx( bestMove[0], bestMove[1])
+}
 
-        //board.update(i, j, 'x')
+function minimax(board, isMaximizingPlayer, depth){
+    // base condition 
+    // independant of maximizing/mininimizing bool as,
+    // it is used to represent only final sate!
+    stat = board.winner()
+    if (stat != null){
+        return stat // -1 / +1 / 0 irrespective of minimizing/maximizing player
+    }
 
-        var score = minimax(boardCopy, 0, true)
-        console.log('score', score)
-        if (score > bestScore){
-            bestScore    = score
-            bestRowMove  = i
-            bestColMove  = j
-        } 
-    })
+    else if (stat == null){
+        // game in progress
+        if (isMaximizingPlayer){
+            var bestScore   = -Infinity
+            var bestMove    = [null, null]
 
-    console.log(bestRowMove)
-    return vec2idx(bestRowMove ,bestColMove)
+            possibleMoves = board.possibleMovesInRowMajor()            
+            possibleMoves.forEach(([i,j], index) => {
+                board.update(i,j, bool2turn(isMaximizingPlayer))
+
+                // for maximizing player - 'x'
+                // if x wins, score = +1 (but can be 0 / -1 as well indicating draw/o-win respectively)
+                // so, lookout for max i.e +1 (if +1 not avl. in search space -> 0 )
+                var score = minimax(board, !isMaximizingPlayer, depth+1) // check either win / draw
+                if (score > bestScore){
+                    bestScore   = score
+                    bestMove    = [i,j]
+                }
+                if (depth==0){console.log('move: ', [i,j], 'score: ', score, 'best: ', bestScore, bestMove)}
+                board.update(i,j, '')
+            })
+
+            // retun differently for first call (as we need data!)
+        if (depth == 0){ return [bestMove, bestScore]} else { return bestScore /*comes from base condition (and searched upon)*/ }
+        }
+        else if (!isMaximizingPlayer){
+            var bestScore   = +Infinity
+            var bestMove    = [null, null]
+
+            possibleMoves = board.possibleMovesInRowMajor()
+            possibleMoves.forEach(([i,j], index) => {
+                board.update(i,j, bool2turn(isMaximizingPlayer))
+
+                // for minimizing player - 'o'
+                // if o wins, score = -1 (but can be 0 / +1 as well indicating draw/x-win respectively)
+                // so, lookout for min i.e -1 (if -1 not avl. in search space -> 0 )
+                // ------------------------------------------------------------------------------------
+                // Looking for min cz, we are expanding our search space for WORST-CASE-SCENARIO
+                // where o allways picks best move
+                var score = minimax(board, !isMaximizingPlayer, depth+1) // check either win / draw
+                if (score < bestScore){
+                    bestScore   = score
+                    bestMove    = [i,j]
+                }
+                
+                board.update(i,j, '')
+            })
+
+            return bestScore // comes from base condition (and searched upon)
+        }
+    }
 }
 
 
-function minimax(board, depth, isMaximizingPlayer){
-    console.log(depth, board.matrix)
-    // base condn
-    if (board.winner() != null ){
-        return board.winner() // never null
-    }
-
-    if (isMaximizingPlayer === true){
-        var moves = board.allEmptyInRowMajor()
-        var bestScore = -Infinity
-        moves.forEach(([i, j], idx)=>{
-            board.update(i, j, minmax2turn(isMaximizingPlayer))
-            var score = minimax(board, depth+1, false)
-            bestScore = Math.max(score, bestScore)
-            return bestScore
-        })
-    } else {
-        // minimizing player
-        var moves = board.allEmptyInRowMajor()
-        var bestScore = +Infinity
-        moves.forEach(([i,j], idx)=>{
-            board.update(i, j, minmax2turn(isMaximizingPlayer))
-            var score = minimax(board, depth+1, true)
-            bestScore = Math.min(score, bestScore)
-            return bestScore
-        })
-    }
-}
-
-
-
-const minmax2turn = (maxOrMin) => {
+const bool2turn = (maxOrMin) => {
     if (maxOrMin === true){
         return 'x'
     } else {

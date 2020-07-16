@@ -25,7 +25,7 @@ async function onPlayerMove(i){
         await new Promise(r => setTimeout(r, 300));
 
         // 2 MINIMAX MOVE 
-        idx = idx = randomMove(board) //returnBestMove(board)//
+        idx = idx = returnBestMove(board)//randomMove(board) //
 
         // idx is null if whole board is full. (minimax cannot make move as all are filled)
         // exec next move only if atleast on of places in board is empty. 
@@ -72,7 +72,7 @@ function miniMax(){
 }
 
 var Name = new Map()
-Name[1] = 'MiniMax'
+Name[1] = 'Minimax'
 Name[-1] = 'Player'
 
 async function checkStatus(){

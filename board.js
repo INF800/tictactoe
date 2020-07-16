@@ -20,23 +20,19 @@ class Board {
     winner(){
         // 1. return a winner (1: minimax -1:player)
         // -----------------------------------------
-        // check rows / cols
+        // check rows & cols
         for(let iter=0; iter<3; iter++){
-            // rows
             if(this.matrix[iter][0] === this.matrix[iter][1] && this.matrix[iter][0] === this.matrix[iter][2] && this.matrix[iter][0] !== ''){
                 return id[this.matrix[iter][0]]
             }
-            // cols
             if(this.matrix[0][iter] === this.matrix[1][iter] && this.matrix[0][iter] === this.matrix[2][iter] && this.matrix[0][iter] !== ''){
                 return id[this.matrix[0][iter]]
             }
         }
-        // check diags
-        // principal
+        // check diags -- principal & non principal
         if(this.matrix[0][0] === this.matrix[1][1] && this.matrix[0][0] === this.matrix[2][2] && this.matrix[0][0] !== ''){
             return id[this.matrix[0][0]]
         }
-        // non principal
         if(this.matrix[0][2] === this.matrix[1][1] && this.matrix[0][2] === this.matrix[2][0] && this.matrix[0][2] !== ''){
             return id[this.matrix[0][2]]
         }
@@ -63,18 +59,7 @@ class Board {
         return len
     }
 
-    // return next most free pos idx 
-    // (by row major)
-    nextMoveInRowMajor() {
-        for(let i=0; i<3; i++){
-            for(let j=0; j<3; j++){
-                if (this.matrix[i][j] == ''){ return [i, j] }
-            }
-        }
-    return null
-    }
-
-    allEmptyInRowMajor(){
+    possibleMovesInRowMajor(){
         var list = []
         for(let i=0; i<3; i++){
             for(let j=0; j<3; j++){
